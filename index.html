@@ -1,0 +1,1283 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>赤ユメタン全単語テスト</title>
+  <style>
+    .page-title {
+      text-align: center;
+      color: #1D9E75;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 1rem 0 1.5rem;
+      letter-spacing: -0.02em;
+    }
+  </style>
+</head>
+<body>
+<h1 class="page-title">赤ユメタン全単語テスト</h1>
+<style>
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #666;
+    --color-text-tertiary: #999;
+    --color-background-primary: #fff;
+    --color-background-secondary: #f8f9fa;
+    --color-background-tertiary: #e9ecef;
+    --color-border-secondary: #dee2e6;
+    --color-border-tertiary: #e9ecef;
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+  }
+  body { margin: 0; background: var(--color-background-primary); }
+  .qw{padding:0.75rem; max-width: 800px; margin: 0 auto; font-family:var(--font-sans)}
+  .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;padding: 0 4px;}
+  .stat{font-size:12px;color:var(--color-text-secondary)}
+  .stat b{color:var(--color-text-primary);font-weight:500}
+  .prog{height:3px;background:var(--color-background-secondary);border-radius:2px;margin-bottom:1rem;overflow:hidden}
+  .prog-fill{height:100%;background:#1D9E75;border-radius:2px;transition:width 0.3s}
+  .word-card{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem 0.75rem;text-align:center;margin-bottom:1rem;box-shadow: 0 2px 8px rgba(0,0,0,0.05)}
+  .word-en{font-size:26px;font-weight:700;color:var(--color-text-primary);margin:0;word-break: break-word;line-height:1.2}
+  .choices{display:grid;gap:10px;margin-bottom:1rem}
+  .cb{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:0.75rem;font-size:14px;color:var(--color-text-primary);cursor:pointer;transition:all 0.2s;text-align:center;line-height:1.3;min-height: 48px;display: flex;align-items: center;justify-content: center;}
+  @media (min-width: 600px) {
+    .qw { padding: 1.5rem 1rem; }
+    .word-en { font-size: 36px; }
+    .word-card { padding: 2.5rem 1.5rem; margin-bottom: 1.5rem; }
+    .cb { font-size: 15px; padding: 1rem; min-height: 54px; }
+    .prog { margin-bottom: 1.5rem; }
+    .choices { margin-bottom: 1.5rem; gap: 12px; }
+  }
+  .cb:hover:not(:disabled){background:var(--color-background-secondary);border-color:var(--color-border-secondary)}
+  .cb.correct{background:#EAF3DE;border-color:#639922;color:#3B6D11;font-weight:500}
+  .cb.wrong{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+  .cb:disabled{cursor:default}
+  .abtn{width:100%;padding:0.75rem;border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);transition: all 0.2s;}
+  .abtn:hover{background:var(--color-background-tertiary)}
+  .start-btn{background:#1D9E75;color:white;border:none;grid-column: 1 / -1;}
+  @media (min-width: 600px) {
+    .abtn { padding: 1rem; font-size: 16px; }
+    .start-btn { width: auto; padding: 6px 16px; font-size: 13px; grid-column: auto; }
+  }
+  .result-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center}
+  .rscore{font-size:52px;font-weight:500;color:#1D9E75}
+  .rlabel{font-size:15px;color:var(--color-text-secondary);margin:0.5rem 0 1.5rem}
+  .miss-list{text-align:left;border-top:0.5px solid var(--color-border-tertiary);margin-top:1.5rem;padding-top:1rem}
+  .miss-list h3{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin:0 0 0.75rem}
+  .miss-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+  .miss-en{color:var(--color-text-primary);font-weight:500}
+  .miss-ja{color:var(--color-text-secondary)}
+  .settings{display:grid;grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));gap:12px;margin-bottom:1.5rem;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+  .s-group{display:flex;flex-direction:column;gap:4px;padding: 0;}
+  @media (min-width: 600px) {
+    .settings { display: flex; align-items: flex-end; gap: 16px; }
+    .s-group { flex-direction: row; align-items: center; gap: 8px; border-right: 1px solid var(--color-border-tertiary); padding-right: 12px; }
+  }
+  .s-group:last-of-type{border-right:none}
+  .settings label{font-size:12px;font-weight:600;color:var(--color-text-secondary);white-space:nowrap;text-transform:uppercase;letter-spacing:0.05em}
+  .settings select{font-size:13px;border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-sm);padding:4px 24px 4px 8px;background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+  .badge{display:inline-block;background:#E1F5EE;color:#0F6E56;font-size:12px;padding:3px 10px;border-radius:var(--border-radius-md);margin-bottom:1rem}
+</style>
+
+<div class="qw">
+  <div id="quiz-section">
+    <div class="top-bar">
+      <div class="stat">問題 <b id="q-num">1</b> / <b id="q-total">20</b></div>
+      <div class="stat">正解 <b id="score">0</b> 問</div>
+      <div class="stat" id="streak-display" style="display:none;color:#1D9E75;font-weight:600">🔥 <b id="streak-count">0</b> 連続</div>
+    </div>
+    <div class="prog"><div class="prog-fill" id="progress" style="width:0%"></div></div>
+    <div class="settings" id="settings-bar">
+      <div class="s-group">
+        <label>出題数</label>
+        <select id="q-count">
+          <option value="10" selected>10問</option>
+          <option value="20">20問</option>
+          <option value="50">50問</option>
+          <option value="100">100問</option>
+        </select>
+      </div>
+      <div class="s-group">
+        <label>難易度</label>
+        <select id="difficulty">
+          <option value="normal">normal（4択）</option>
+          <option value="hard">hard（8択）</option>
+        </select>
+      </div>
+      <div class="s-group">
+        <label>モード</label>
+        <select id="mode">
+          <option value="en-ja">英 → 日</option>
+          <option value="ja-en">日 → 英</option>
+          <option value="shuffle">シャッフル</option>
+        </select>
+      </div>
+      <button class="abtn start-btn" onclick="startQuiz()">開始 / リセット</button>
+    </div>
+    <div class="word-card"><div class="word-en" id="word-en">—</div></div>
+    <div class="choices" id="choices"></div>
+    <button class="abtn" id="next-btn" onclick="nextQuestion()" style="display:none">次の問題 →</button>
+  </div>
+
+  <div id="result-section" style="display:none">
+    <div class="result-card">
+      <div class="badge">赤ユメタン 全1000語</div>
+      <div class="rscore" id="final-score"></div>
+      <div class="rlabel" id="final-label"></div>
+      <button class="abtn" onclick="startQuiz()" style="margin-bottom:0.75rem">もう一度 (同じ設定)</button>
+      <button class="abtn" onclick="retryMiss()" id="retry-miss-btn" style="margin-top:0.5rem;border-color:var(--color-border-tertiary);color:var(--color-text-secondary);display:none">間違えた単語だけ再テスト</button>
+      <div class="miss-list" id="miss-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const RAW = `食欲,appetite
+うたた寝,nap
+建築,architecture
+続く,last
+政治,politics
+～を展示する,display
+等級,grade
+ごみ,trash
+引き渡し,surrender
+大多数,majority
+一見,glance
+状況,condition
+及んでいる,range
+手段,means
+～を減らす,reduce
+薬,medicine
+～を消費する,consume
+運,fortune
+努力,effort
+～を見積もる,estimate
+～をつかむ,seize
+不足,shortage
+夜明け,dawn
+指示,instruction
+事柄,affair
+道具,instrument
+割合,rate
+～を飾る,decorate
+～の用意をする,prepare
+対話,dialogue
+離婚,divorce
+～を加える,add
+供給,supply
+接近方法,access
+習慣,habit
+～を伝達する,communicate
+～を数える,count
+役割,role
+出来事,incident
+風味,flavor
+～を味わう,taste
+葬式,funeral
+心配,trouble
+物,stuff
+飲食物,diet
+財政,finance
+主題,subject
+～に食べ物を与える,feed
+職業,profession
+～を賃借りする,rent
+腐る,decay
+便利な,convenient
+私的な,private
+緩い,loose
+年1回の,annual
+遠い,distant
+高価な,precious
+利用できる,available
+横たわる,lie
+叫ぶ,exclaim
+～を修理する,fix
+ざらざらした,rough
+打ち解けた,casual
+避けられない,inevitable
+～を蓄える,store
+気付いている,conscious
+～を持つ,possess
+返事する,reply
+ありそうな,likely
+ありふれた,ordinary
+～を励ます,cheer
+～に知らせる,inform
+わずかな,slight
+無駄な,vain
+～を購入する,purchase
+しきりにしたがった,eager
+～をこぼす,spill
+たびたび起こる,frequent
+適した,adequate
+～をふく,wipe
+じっと見つめる,stare
+～をつぐ,pour
+価値がある,worth
+～を延期する,postpone
+正確な,exact
+十分な,sufficient
+慣れた,accustomed
+異なった,distinct
+～を縫う,sew
+家庭の,domestic
+よく知られた,familiar
+さらなる,further
+上がる,rise
+裸の,bare
+予備の,spare
+～を保護する,protect
+～をつるす,hang
+～かなと思う,wonder
+似ている,alike
+生きて,alive
+借金,debt
+政治,administration
+状況,situation
+会議,conference
+軍隊,military
+内閣,cabinet
+預金口座,account
+候補者,candidate
+保証,guarantee
+人口,population
+少数派,minority
+大使,ambassador
+会社,firm
+価値,value
+農業,agriculture
+相続人,heir
+選挙,election
+労働組合,union
+結果,result
+利益,benefit
+悪,vice
+職務,duty
+～に与える,provide
+～の原因となる,cause
+役人,officer
+賃金,wage
+交渉,negotiation
+地域,region
+特許,patent
+合計,sum
+税金,tax
+法人,corporation
+共和国,republic
+～を試みる,attempt
+目的,purpose
+割合,proportion
+民主主義,democracy
+頂上,summit
+保険,insurance
+危険,hazard
+費用,expense
+料金,charge
+年金,pension
+条約,treaty
+境界,border
+産業,industry
+遺産,legacy
+～に警告する,warn
+収入,income
+～を妨げる,interrupt
+二者択一の,alternative
+逃げる,escape
+～を追う,pursue
+経済の,economic
+逆の,reverse
+裕福な,wealthy
+～を延期する,extend
+全体の,entire
+ふさわしい,proper
+悲鳴を上げる,scream
+小さい方の,minor
+目に見える,visible
+～を許す,permit
+～に関係する,concern
+～を明らかにする,reveal
+～を押しつぶす,crush
+投票する,vote
+永続する,permanent
+公の,official
+非常に小さい,minute
+～を発表する,announce
+～を設立する,establish
+～を確認する,confirm
+～を提供する,offer
+～を得る,gain
+～を見なす,regard
+即座の,immediate
+～を廃止する,abolish
+～を立証する,prove
+～を解雇する,dismiss
+～を要求する,demand
+第1位の,primary
+～を豊かにする,enrich
+～に取って代わる,replace
+不明瞭な,obscure
+劣った,inferior
+～を含む,involve
+重大な,significant
+込み入った,complicated
+社会の,social
+～を広げる,spread
+市民の,civil
+当然支払われるべき,due
+大きい方の,major
+恐ろしい,scary
+共通の,common
+財政上の,financial
+餓死する,starve
+強烈な,intense
+爆発する,explode
+影響,impact
+感謝,gratitude
+～を驚かせる,astonish
+衝動,impulse
+～に責任を負わせる,blame
+緊張,tension
+歓喜,delight
+～に賛成する,approve
+衰える,fade
+恥,shame
+責任,responsibility
+～を侮辱する,insult
+～を刺激する,stimulate
+同情,sympathy
+～をかき乱す,disturb
+予報,forecast
+～を褒める,praise
+匂い,scent
+～を困惑させる,confuse
+～を引き付ける,attract
+脅迫,threat
+暴力,violence
+本能,instinct
+抗議,protest
+～にさせてやる,let
+ため息をつく,sigh
+感覚,sensation
+賛成する,agree
+ためらう,hesitate
+顔を赤らめる,blush
+善,virtue
+教育,education
+見解,viewpoint
+論点,issue
+～を予言する,predict
+～を批評する,criticize
+～を魅了する,fascinate
+～であるらしいと疑う,suspect
+～の感情を害する,offend
+～を悟る,realize
+～を祝う,celebrate
+～を非難する,condemn
+～を大事にする,cherish
+～だと思う,suppose
+～を否定する,deny
+～を推測する,guess
+～を拒絶する,reject
+深い悲しみ,grief
+～を面白がらせる,amuse
+～を容赦する,excuse
+不快な,nasty
+控えめな,modest
+好奇心が強い,curious
+不平を言う,complain
+怖がる,scared
+～を正しく理解する,appreciate
+～を想像する,imagine
+受動的な,passive
+複合の,complex
+厳しい,strict
+いらいらした,irritated
+一般的な,general
+油断のない,alert
+確信している,certain
+誤った,false
+失望した,disappointed
+有能な,efficient
+～に乗り損なう,miss
+恐ろしい,terrible
+思いやりがある,considerate
+～を突き止める,locate
+分別のある,sensible
+冷酷な,cruel
+巨大な,huge
+論理にかなった,logical
+～に反対する,oppose
+否定的な,negative
+気前の良い,generous
+正直な,sincere
+いとわない,willing
+本気の,serious
+楽天主義の,optimistic
+～を予期する,expect
+頑固な,stubborn
+間違いのない,accurate
+～を悩ませる,annoy
+耳を傾けない,deaf
+～を強く望む,desire
+神経質な,nervous
+熱狂的な,enthusiastic
+驚くべき,marvelous
+無関心な,indifferent
+取り乱している,upset
+ばかばかしい,silly
+熱心な,keen
+したがらない,reluctant
+失礼な,rude
+～を後悔する,regret
+前向きな,positive
+必死の,desperate
+特権,privilege
+任命,appointment
+～を直す,mend
+頼る,depend
+危機,crisis
+一部,portion
+経験,experience
+～を製造する,produce
+欠如,lack
+機会,opportunity
+手順,procedure
+優先,priority
+積み荷,load
+事業,enterprise
+～に保証する,assure
+取り扱う,deal
+特性,property
+～を分配する,distribute
+丸薬,pill
+地所,estate
+足跡,track
+有用性,utility
+例,instance
+契約,contract
+段階,phase
+～を分ける,share
+～に納得させる,convince
+報酬,reward
+脅威,menace
+任務,mission
+計画,scheme
+同僚,colleague
+物,object
+輝き,glow
+～を獲得する,obtain
+～を昇進させる,promote
+～を輸入する,import
+表面,surface
+驚き,alarm
+装備,equipment
+前後関係,context
+物質,substance
+～を稼ぐ,earn
+～を適用する,apply
+～を制限する,limit
+～を雇う,employ
+糸,thread
+機能,function
+注意,attention
+構成要素,component
+責任がある,responsible
+～に従う,obey
+～を禁止する,forbid
+全部そろった,complete
+単純な,plain
+最終の,ultimate
+～に値する,deserve
+～を帰する,attribute
+初めの,initial
+～を取得する,acquire
+～を受け取る,accept
+～を達成する,achieve
+～に命じる,command
+固定された,steady
+完全な,absolute
+～をつり下げる,suspend
+主な,principal
+～を許可する,allow
+特定の,specific
+きつい,tight
+～を要求する,claim
+～を操作する,operate
+一時的な,temporary
+～を必要とする,require
+次の,following
+～を広告する,advertise
+前者の,former
+～を許す,forgive
+～を向ける,direct
+おおよその,approximate
+退職する,retire
+～を説得する,persuade
+～を決定する,determine
+～を除外する,omit
+後者の,latter
+～を決心する,resolve
+～を扱う,handle
+正しい,correct
+～を断言する,assert
+～を造る,manufacture
+具体的な,concrete
+かなりの,considerable
+～に強いる,force
+～を占める,occupy
+～に意見を求める,consult
+政治の,political
+～をやめる,quit
+実際の,actual
+～を見落とす,overlook
+～を放送する,broadcast
+半島,peninsula
+～に近づく,approach
+市民,citizen
+舗装道路,pavement
+～を想定する,assume
+奴隷,slave
+起源,origin
+～を分ける,separate
+進歩,progress
+利益,profit
+船旅,voyage
+～の基礎を築く,found
+種族,tribe
+移動手段,transportation
+人類,mankind
+遺産,heritage
+子孫,descendant
+文明,civilization
+時代,era
+現れる,appear
+学会,congress
+地区,district
+植民地,colony
+目的地,destination
+～を宣言する,declare
+源,source
+～する余裕がある,afford
+伝統,tradition
+繁栄,prosperity
+国籍,nationality
+職業,occupation
+専門用語,term
+地方,province
+～を壊滅させる,ruin
+～を翻訳する,translate
+先祖,ancestor
+運賃,fare
+依然として～のままである,remain
+マスメディア,media
+10年間,decade
+雰囲気,atmosphere
+運命,destiny
+気候,climate
+伝記,biography
+見晴らし,outlook
+進化,evolution
+境界線,boundary
+財宝,treasure
+移民,immigrant
+伝説,legend
+加わる,participate
+～を賭ける,bet
+～を征服する,conquer
+～を適合させる,adjust
+～を交換する,exchange
+～を予約する,reserve
+～を禁止する,ban
+言葉の,linguistic
+～を移す,transfer
+～を経験する,undergo
+短時間の,brief
+終わる,cease
+～が掛かる,cost
+今の,current
+～をたどる,trace
+計り知れない,immense
+～を組織する,organize
+流ちょうな,fluent
+融通の利く,flexible
+見えなくなる,disappear
+都市の,urban
+～を延期する,delay
+～を支配する,rule
+～を発達させる,develop
+古代の,ancient
+～を意図する,intend
+何とか～する,manage
+母国の,native
+優れている,excel
+～を囲む,surround
+田舎の,rural
+～を自由にする,release
+～を取り消す,cancel
+学識のある,literate
+～を結合させる,unite
+おびえた,frightened
+～を行う,conduct
+満足して,content
+理想的な,ideal
+～を提出する,submit
+退屈な,boring
+減少する,decrease
+神聖な,holy
+独立した,independent
+速い,rapid
+～を前進させる,advance
+空いている,vacant
+入り組んだ,involved
+～に侵入する,invade
+～を上げる,raise
+～を傷つける,hurt
+援助,aid
+～を取り戻す,recover
+荷,burden
+賞,award
+～を横たえる,lay
+固執する,persist
+事情,circumstance
+相手,opponent
+ふくらむ,swell
+細胞,cell
+～を捜す,search
+結果,effect
+～を曲げる,bend
+住宅,residence
+災害,disaster
+努力,endeavor
+液体,liquid
+～を述べる,express
+名誉,honor
+乳児,infant
+～に影響を及ぼす,affect
+力,strength
+～を断る,refuse
+優勢,odds
+化学薬品,chemical
+～に勝る,exceed
+緊急事態,emergency
+苦しむ,suffer
+犠牲者,victim
+動機,motivation
+～を救う,rescue
+運動,exercise
+会,institution
+傷,injury
+疲労,fatigue
+競争,competition
+～を調査する,examine
+規制,regulation
+可能性,potential
+見込み,prospect
+過程,process
+一時休止,pause
+治療,cure
+欲求不満,frustration
+公正,justice
+症状,symptom
+～に教える,instruct
+注射,injection
+衝突,crash
+死ぬ運命にある,mortal
+前の,previous
+～を無視する,ignore
+～を打つ,strike
+鋭い,acute
+～を折り畳む,fold
+公正な,fair
+～を守る,defend
+～をつかむ,grasp
+徹底的な,thorough
+～する傾向がある,apt
+人工の,artificial
+～をまねる,imitate
+～を引っかく,scratch
+極端な,extreme
+～を治す,heal
+野心的な,ambitious
+急を要する,urgent
+外部の,external
+育つ,grow
+内部の,internal
+～を戻す,restore
+～を取り除く,relieve
+精神の,mental
+適切な,appropriate
+～を追跡する,chase
+競争する,compete
+初歩の,elementary
+～を支える,support
+～を集中させる,concentrate
+攻撃的な,aggressive
+誠実な,genuine
+～について言及する,mention
+～を克服する,overcome
+～を薦める,recommend
+～を我慢する,bear
+溺れる,drown
+痛い,sore
+体の,physical
+極めて重要な,essential
+～を伸ばす,stretch
+酸性の,acid
+心配して,anxious
+致命的な,fatal
+～を移動させる,remove
+～を打ち破る,defeat
+成功した,successful
+～を助ける,assist
+信じられない,incredible
+～を防ぐ,prevent
+態度,attitude
+差別,discrimination
+絶望,despair
+特徴,feature
+〜を軽視する,neglect
+〜を関係させる,relate
+方向,direction
+信頼,confidence
+感情,emotion
+めちゃくちゃな様子,mess
+頼る,rely
+権威,authority
+いたずら,mischief
+交流,interaction
+惨めさ,misery
+哀れみ,pity
+器用さ,facility
+貧乏,poverty
+評判,reputation
+嫉妬,envy
+偏見,prejudice
+〜を疑う,doubt
+〜と一緒に行く,accompany
+方言,dialect
+闘争,conflict
+うなずく,nod
+収容能力,capacity
+～を悩ます,bother
+経歴,career
+～に似ている,resemble
+有利,advantage
+子供時代,childhood
+～に印象付ける,impress
+名声,fame
+賢明さ,wisdom
+～を比較する,compare
+知性,intellect
+慈善,charity
+うわさ,rumor
+能力,faculty
+～を祝う,congratulate
+勇気,courage
+～を欺く,deceive
+激怒,rage
+天才,genius
+仲間,companion
+通訳者,interpreter
+討論する,argue
+～を届ける,deliver
+～を勇気付ける,encourage
+～を見分ける,distinguish
+個々の,individual
+年配の,elderly
+恥じて,ashamed
+～をぎょっとさせる,frighten
+辛抱強い,patient
+～を強調する,stress
+有能な,capable
+漏れる,leak
+～と調和する,match
+～を困らせる,puzzle
+謙虚な,humble
+利己的な,selfish
+気品のある,noble
+敏感な,sensitive
+～にあいさつする,greet
+～を論争する,debate
+前途有望な,promising
+忠誠な,loyal
+～を採用する,adopt
+慎む,refrain
+気前の良い,liberal
+～を相続する,inherit
+～を信頼する,trust
+～に適する,suit
+～であると結論を下す,conclude
+～を見捨てる,desert
+先輩の,senior
+悪い,evil
+お辞儀する,bow
+きちんとした,tidy
+～を確認する,identify
+知能の高い,intelligent
+協力する,cooperate
+～に思い出させる,remind
+優れている,superior
+邪魔をする,interfere
+ねたんで,jealous
+よく似た,similar
+返事をする,respond
+後輩の,junior
+目立った,outstanding
+～を認める,admit
+莫大な,enormous
+大胆な,bold
+深刻な,severe
+～を組み立てる,construct
+優しい,tender
+謝る,apologize
+～を提案する,propose
+要因,factor
+衣服,apparel
+代理人,agent
+〜をくっつける,attach
+側面,aspect
+協力,cooperation
+〜を集める,collect
+質,quality
+成る,consist
+〜を述べる,describe
+列,row
+出発,departure
+言語,language
+〜を痛める,injure
+骨組み,frame
+～を修理する,repair
+哲学,philosophy
+〜を借りる,borrow
+焦点,focus
+集団,mass
+基金,fund
+強調,emphasis
+〜をだます,cheat
+～を手配する,arrange
+～を探検する,explore
+犯罪,crime
+材料,material
+～を説明する,explain
+冒険,venture
+姿,figure
+壮観,spectacle
+詩,poetry
+彫像,sculpture
+記事,article
+文学,literature
+層,layer
+依頼人,client
+資源,resource
+定義,definition
+理論,theory
+草稿,draft
+〜を好む,prefer
+言及する,refer
+傾向,trend
+～を変える,vary
+～を表す,represent
+居住者,resident
+仮説,hypothes
+乗組員,crew
+比,ratio
+～を例示する,illustrate
+想像上の,imaginary
+狙う,aim
+～を飼育する,breed
+～を出版する,publish
+起こる,occur
+典型的な,typical
+～について話し合う,discuss
+全世界の,universal
+恐ろしい,horrible
+～を再検討する,review
+お気に入りの,favorite
+幅の広い,broad
+～を楽しませる,entertain
+～に耐える,endure
+専門にする,specialize
+～を提案する,suggest
+古風な,antique
+歩き回る,wander
+基本的な,fundamental
+～の形を変える,transform
+～を展示する,exhibit
+～を上演する,perform
+～を強調する,emphasize
+～に気付く,perceive
+～を維持する,maintain
+～を移す,shift
+～を向上させる,improve
+古典の,classical
+続ける,proceed
+堅い,stiff
+正確な,precise
+～を保護する,preserve
+最終的な,eventual
+奇妙な,odd
+きらきら輝く,brilliant
+～を引用する,quote
+優美な,graceful
+強く主張する,insist
+独特の,peculiar
+険しい,steep
+～を補強する,reinforce
+～を始める,launch
+最新の,latest
+～を装う,pretend
+～を選び出す,select
+抽象的な,abstract
+遠い,remote
+～を除く,eliminate
+～を対照する,contrast
+極,pole
+〜を借りている,owe
+炎,flame
+酸素,oxygen
+蒸気,vapor
+生息地,habitat
+量,quantity
+燃料,fuel
+分析,analysis
+積み重ね,pile
+種,species
+風潮,tide
+装置,device
+穀物,grain
+さび,rust
+汚染,pollution
+収穫,harvest
+哺乳動物,mammal
+実験,experiment
+研究,research
+～を吸収する,absorb
+重力,gravity
+体温計,thermometer
+料金,fee
+温度,temperature
+平均,average
+土壤,soil
+要素,element
+軌道,orbit
+鉱山,mine
+環境,environment
+流動体,fluid
+調査,survey
+化石,fossil
+水素,hydrogen
+直径,diameter
+遺伝子,gene
+衛星,satellite
+解決,solution
+～を分ける,divide
+石油,petroleum
+圧迫,pressure
+～を構成する,compose
+詳細,detail
+百科事典,encyclopedia
+～を発明する,invent
+現象,phenomenon
+爆発,eruption
+生き物,creature
+単位,unit
+ごく小さい,tiny
+～を適合させる,adapt
+増す,expand
+男性の,male
+〜を消化する,digest
+破裂する,burst
+～を測る,measure
+最小限の,minimum
+〜を傷つける,wound
+豊富な,abundant
+相対的な,relative
+～を説明する,demonstrate
+～を探し求める,seek
+～を発見する,discover
+〜を調べる,investigate
+滑らかな,smooth
+特定の,particular
+成熟した,mature
+不可欠な,vital
+浅い,shallow
+厚い,thick
+最大限の,maximum
+凍る,freeze
+広大な,vast
+～を反射する,reflect
+明らかな,obvious
+だんだんの,gradual
+原子力の,nuclear
+～を指し示す,indicate
+～を観察する,observe
+～より長生きする,survive
+重さがある,weigh
+存在する,exist
+注目すべき,remarkable
+並外れた,extraordinary
+女性の,female
+反応する,react
+小ぎれいな,neat
+でたらめな,random
+～を含む,contain
+特有な,characteristic
+反対側の,opposite
+〜を扱う,treat
+～を下る,descend
+消える,vanish
+～を変える,alter
+湿気の多い,humid
+流れ込む,flow
+溶ける,melt
+すさまじい,tremendous
+性,gender
+振る舞う,behave
+試み,trial
+～を与える,contribute
+〜を成し遂げる,accomplish
+証拠,evidence
+起こる,arise
+〜を訴える,accuse
+～に偶然出会う,encounter
+結果,consequence
+～に約束させる,engage
+～をだめにする,spoil
+法廷,court
+新時代,epoch
+～を熟考する,consider
+罪,sin
+～に気が付く,notice
+原理,principle
+幸福,welfare
+刑務所,jail
+～に影響を及ぼす,influence
+～を所有する,own
+～を罰する,punish
+構成,constitution
+心理学,psychology
+〜を含む,include
+策略,strategy
+人間性,humanity
+自殺,suicide
+目擊者,witness
+慈悲,mercy
+階級制度,hierarchy
+～を隠す,hide
+犠牲,sacrifice
+宗教,religion
+〜を見分ける,recognize
+例外,exception
+一団,troop
+～をさらす,expose
+論理,logic
+議会,parliament
+～を連想する,associate
+～を代わりに用いる,substitute
+～を浪費する,waste
+～に仕える,serve
+～を紹介する,introduce
+～を突き刺す,stick
+～を避ける,avoid
+信頼,faith
+～を続ける,continue
+進んで行う,voluntary
+～を禁止する,prohibit
+〜を果たす,fulfill
+～を思い出す,recall
+じっと見る,gaze
+祈る,pray
+無限の,infinite
+～を結合させる,combine
+～を重んじる,esteem
+中間の,medium
+中立の,neutral
+あえて〜する,dare
+～を改善する,reform
+～を確定する,settle
+平行な,parallel
+相互の,mutual
+規則正しい,regular
+～を断る,decline
+妥当な,reasonable
+～を受け取る,receive
+もがく,struggle
+根本的な,radical
+～に抵抗する,resist
+感謝する,grateful
+～を鼓舞する,inspire
+〜を埋める,bury
+〜を起こす,awake
+〜から盗む,rob
+〜を磨く,polish
+永遠の,eternal
+～と言う,remark
+～を犯す,commit
+〜を掃く,sweep
+反対の,contrary
+有罪の,guilty
+激しい,intensive
+～を暗示する,imply
+重要である,matter
+～を逮捕する,arrest
+道徳の,moral
+～に出席する,attend
+〜しがちである,tend
+有害な,harmful
+〜を引く,draw
+無邪気な,innocent
+〜を称賛する,admire
+～を引き裂く,tear
+法律上の,legal
+現代の,contemporary
+安定した,stable`;
+
+const ALL = RAW.trim().split('\n').map(l => {
+  const i = l.indexOf(',');
+  return {ja: l.slice(0,i).trim(), en: l.slice(i+1).trim()};
+}).filter(w => w.ja && w.en);
+
+let words=[], current=0, score=0, answered=false, missed=[], retryPool=null, streak=0;
+
+function shuffle(a){return [...a].sort(()=>Math.random()-0.5)}
+
+function startQuiz(pool){
+  const cnt = parseInt(document.getElementById('q-count').value);
+  // poolがある場合は再テストモード
+  words = shuffle(pool||retryPool||ALL).slice(0, Math.min(cnt, (pool||retryPool||ALL).length));
+  
+  // 再テスト時は設定バーのモードを無視するため、wordsにモード情報を付与
+  if(pool || retryPool) {
+    // すでにモード情報を持っている（再テスト）
+  } else {
+    // 新規テスト：現在のモードを各単語に付与
+    const currentMode = document.getElementById('mode').value;
+    words = words.map(w => {
+      let mode = currentMode;
+      if (currentMode === 'shuffle') {
+        mode = Math.random() < 0.5 ? 'en-ja' : 'ja-en';
+      }
+      return {word: w, mode: mode};
+    });
+  }
+  
+  retryPool = null;
+  current=0; score=0; missed=[]; answered=false; streak=0;
+  document.getElementById('score').textContent=0;
+  document.getElementById('q-total').textContent=words.length;
+  document.getElementById('streak-display').style.display='none';
+  document.getElementById('streak-count').textContent=0;
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('quiz-section').style.display='block';
+  document.getElementById('settings-bar').style.display='flex';
+  showQ();
+}
+
+function retryMiss(){
+  if(!missed.length) return;
+  retryPool = missed;
+  startQuiz(missed);
+}
+
+function showQ(){
+  answered=false;
+  const item = words[current];
+  const w = item.word;
+  const mode = item.mode;
+  
+  // モードに応じて問題文を設定
+  document.getElementById('word-en').textContent = mode === 'ja-en' ? w.ja : w.en;
+  
+  document.getElementById('q-num').textContent=current+1;
+  document.getElementById('progress').style.width=Math.round((current/words.length)*100)+'%';
+  document.getElementById('next-btn').style.display='none';
+
+  const difficulty = document.getElementById('difficulty').value;
+  const choiceCount = difficulty === 'hard' ? 8 : 4;
+  const cols = difficulty === 'hard' ? 4 : 2;
+
+  // モードに応じて正解と誤選択肢のプールを設定
+  const correct = mode === 'ja-en' ? w.en : w.ja;
+  const others = mode === 'ja-en' ? ALL.map(x => x.en) : ALL.map(x => x.ja);
+  const filteredOthers = others.filter(x => x !== correct);
+  
+  const choices = shuffle([correct, ...shuffle(filteredOthers).slice(0, choiceCount - 1)]);
+
+  const c=document.getElementById('choices');
+  c.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  c.innerHTML='';
+  choices.forEach(ch=>{
+    const b=document.createElement('button');
+    b.className='cb'; b.textContent=ch;
+    b.onclick=()=>pick(b,ch,correct,w);
+    c.appendChild(b);
+  });
+}
+
+function pick(btn,sel,correct,word){
+  if(answered) return;
+  answered=true;
+  document.querySelectorAll('.cb').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===correct) b.classList.add('correct');
+  });
+  if(sel===correct){
+    score++; 
+    streak++;
+    document.getElementById('score').textContent=score;
+    if(streak > 3) {
+      document.getElementById('streak-display').style.display='inline';
+      document.getElementById('streak-count').textContent=streak;
+    }
+  } else {
+    btn.classList.add('wrong'); 
+    streak = 0;
+    document.getElementById('streak-display').style.display='none';
+    const mode = document.getElementById('mode').value;
+    // ミスリストにモード情報を含めて保存
+    if(!missed.some(m => m.word.en === word.en && m.mode === mode)){
+      missed.push({word: word, mode: mode});
+    }
+  }
+  document.getElementById('next-btn').style.display='block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current>=words.length){showResult(); return;}
+  showQ();
+}
+
+function showResult(){
+  document.getElementById('quiz-section').style.display='none';
+  document.getElementById('result-section').style.display='block';
+  const t=words.length;
+  const p=score/t;
+  const percent = Math.round(p * 100);
+  document.getElementById('final-score').textContent = `${score} / ${t} (${percent}%)`;
+  
+  if (percent < 80) {
+    location.href = 'https://youtu.be/L4J5pxu48v8?si=4PCv2cKCAbu1E54h';
+    return;
+  }
+  
+  document.getElementById('final-label').textContent = '';
+  document.getElementById('progress').style.width='100%';
+  const mb=document.getElementById('retry-miss-btn');
+  const currentMode = document.getElementById('mode').value;
+  // シャッフルモード以外、かつミスがある場合のみ再テストボタンを表示
+  mb.style.display=(missed.length && currentMode !== 'shuffle') ? 'block' : 'none';
+  mb.textContent='間違えた '+missed.length+' 問だけ再テスト';
+  const ml=document.getElementById('miss-list');
+  ml.innerHTML=missed.length
+    ?'<h3>間違えた単語</h3>'+missed.map(m=>`<div class="miss-row"><span class="miss-en">${m.word.en}</span><span class="miss-ja">${m.word.ja}</span> <small style="color:var(--color-text-tertiary)">(${m.mode==='ja-en'?'日→英':'英→日'})</small></div>`).join('')
+    :'';
+}
+
+startQuiz();
+</script>
